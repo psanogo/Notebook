@@ -1,12 +1,20 @@
 # Building a CNN to Classify Handwritten Characters
-This notebook demonstrates the design, training, and evaluation of a convolutional neural network (CNN) using the MNIST dataset.
+
+This notebook demonstrates the design, training, and evaluation of a convolutional neural network (CNN) using the MNIST handwritten digit dataset.
 import tensorflow as tf
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
+import numpy as np
+## Task 1: Load and Explore the Dataset
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+print("Training samples:", x_train.shape)
+print("Test samples:", x_test.shape)
+## Task 2: Data Preprocessing
 x_train, x_test = x_train / 255.0, x_test / 255.0
 x_train = x_train[..., tf.newaxis]
 x_test = x_test[..., tf.newaxis]
+## Task 3: Define the CNN Model
 model = models.Sequential([
     layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
     layers.MaxPooling2D((2, 2)),
@@ -14,18 +22,33 @@ model = models.Sequential([
     layers.Dense(128, activation='relu'),
     layers.Dense(10, activation='softmax')
 ])
+
+model.summary()
+## Task 4: Compile and Train the Model
 model.compile(
     optimizer='adam',
     loss='sparse_categorical_crossentropy',
     metrics=['accuracy']
 )
+
 history = model.fit(
     x_train,
     y_train,
     epochs=5,
     validation_data=(x_test, y_test)
 )
-test_loss, test_accuracy = model.evaluate(x_test
+## Task 5: Evaluate the Model
+test_loss, test_accuracy = model.evaluate(x_test, y_test)
+print("Test accuracy:", test_accuracy)
+## Task 6: Sample Predictions
+
+predictions = model.predict(x_test[:5])
+predicted_labels = np.argmax(predictions, axis=1)
+
+print("Predicted labels:", predicted_labels)
+print("True labels:", y_test[:5])
+
+## Task 7: Visualize Training Performance
 plt.plot(history.history['accuracy'], label='Training Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
 plt.xlabel('Epoch')
